@@ -21,10 +21,10 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
-
       - name: Install Android SDK
-        run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
+        run: |
+          yes | sdkmanager --licenses || true
+          sdkmanager --install "platforms;android-35" "build-tools;35.0.0" "platform-tools"
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -34,9 +34,10 @@ jobs:
         run: unzip -q ROTOALIGN30_Android_Inicial.zip
 
       - name: Build APK
-        run: gradle -p ROTOALIGN30_Android assembleDebug
+        run: gradle -p ROTOALIGN30_Android assembleDebug --stacktrace
 
       - uses: actions/upload-artifact@v4
         with:
           name: ROTOALIGN30-APK
           path: ROTOALIGN30_Android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
